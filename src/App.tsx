@@ -462,7 +462,7 @@ export default function App() {
     bufferRef.current = [];
     
     try {
-      const result = await translateGestures(currentBuffer, language);
+      //const result = await translateGestures(currentBuffer, language);
       
       // Update Usage Count
       const newCount = usageCount + 1;
