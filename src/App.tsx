@@ -453,6 +453,9 @@ export default function App() {
     speak(text);
   };
 
+  // ========== FIXED handleTranslation FUNCTION ==========
+  // PROBLEM: result variable was undefined because translateGestures was commented out
+  // SOLUTION: Added backend API call to /api/translate and stored result in variable
   const handleTranslation = useCallback(async () => {
     if (bufferRef.current.length === 0 || isTranslatingRef.current) return;
     
@@ -462,7 +465,19 @@ export default function App() {
     bufferRef.current = [];
     
     try {
-      //const result = await translateGestures(currentBuffer, language);
+      // 🔥 FIX: Call backend API instead of direct Gemini
+      // This keeps API key secure (hidden from browser)
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gestures: currentBuffer,
+          language: language
+        })
+      });
+      
+      const data = await response.json();
+      const result = data.text; // ✅ result is now defined!
       
       // Update Usage Count
       const newCount = usageCount + 1;
@@ -944,9 +959,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Setup Instructions Modal */}
-      {!import.meta.env.VITE_GEMINI_API_KEY && !process.env.GEMINI_API_KEY && (
-
+      {/* Setup Instructions Modal - Disabled with false to prevent showing */}
+      {false && (
         <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
           <div className="max-w-md w-full glass-panel p-8 space-y-6 neon-border">
             <div className="text-center space-y-2">
@@ -957,7 +971,7 @@ export default function App() {
               <p>To enable neural translation, you must configure your API Key.</p>
               <div className="bg-black/50 p-4 rounded border border-white/10 space-y-2">
                 <p className="text-xs text-cyber-blue">1. Go to Vercel Dashboard → Settings → Environment Variables</p>
-                <p className="text-xs text-cyber-blue">2. Add: API_KEY = your_key_here</p>
+                <p className="text-xs text-cyber-blue">2. Add: GEMINI_API_KEY = your_key_here</p>
                 <p className="text-xs text-cyber-blue">3. Redeploy</p>
               </div>
               <p className="text-[10px] opacity-50 italic">
