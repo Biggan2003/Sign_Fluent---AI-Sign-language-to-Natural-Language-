@@ -462,7 +462,20 @@ export default function App() {
     bufferRef.current = [];
     
     try {
-      const result = await translateGestures(currentBuffer, language);
+      //const result = await translateGestures(currentBuffer, language);
+      // Replace with this
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gestures: currentBuffer,
+          language: language
+        })
+      });
+      const data = await response.json();
+      const result = data.text;
+
+
       
       // Update Usage Count
       const newCount = usageCount + 1;
