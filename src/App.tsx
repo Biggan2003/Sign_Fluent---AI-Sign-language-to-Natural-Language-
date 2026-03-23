@@ -462,20 +462,7 @@ export default function App() {
     bufferRef.current = [];
     
     try {
-      //const result = await translateGestures(currentBuffer, language);
-      // Replace with this
-      const response = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          gestures: currentBuffer,
-          language: language
-        })
-      });
-      const data = await response.json();
-      const result = data.text;
-
-
+      const result = await translateGestures(currentBuffer, language);
       
       // Update Usage Count
       const newCount = usageCount + 1;
@@ -958,7 +945,8 @@ export default function App() {
       )}
 
       {/* Setup Instructions Modal */}
-      {!import.meta.env.VITE_GEMINI_API_KEY && (
+      {!import.meta.env.VITE_GEMINI_API_KEY && !process.env.GEMINI_API_KEY && (
+
         <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
           <div className="max-w-md w-full glass-panel p-8 space-y-6 neon-border">
             <div className="text-center space-y-2">
@@ -966,11 +954,11 @@ export default function App() {
               <h2 className="text-2xl font-mono font-bold neon-text">API KEY REQUIRED</h2>
             </div>
             <div className="space-y-4 text-sm font-mono opacity-80">
-              <p>To enable neural translation, you must configure your Gemini API Key.</p>
+              <p>To enable neural translation, you must configure your API Key.</p>
               <div className="bg-black/50 p-4 rounded border border-white/10 space-y-2">
-                <p className="text-xs text-cyber-blue">1. Go to AI Studio Settings</p>
-                <p className="text-xs text-cyber-blue">2. Add Secret: GEMINI_API_KEY</p>
-                <p className="text-xs text-cyber-blue">3. The app will rebuild automatically</p>
+                <p className="text-xs text-cyber-blue">1. Go to Vercel Dashboard → Settings → Environment Variables</p>
+                <p className="text-xs text-cyber-blue">2. Add: API_KEY = your_key_here</p>
+                <p className="text-xs text-cyber-blue">3. Redeploy</p>
               </div>
               <p className="text-[10px] opacity-50 italic">
                 Security Note: Keys are managed via environment variables and never hardcoded in source.
